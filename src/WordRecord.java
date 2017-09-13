@@ -4,7 +4,7 @@ public class WordRecord {
 	private int y;
 	private int maxY;
 	private boolean dropped;
-        //private boolean matched; // ADDED VARIABLE
+        private boolean matched; // ADDED VARIABLE
 	
 	private int fallingSpeed;
 	private static int maxWait=1500;
@@ -79,6 +79,7 @@ public class WordRecord {
 	public synchronized void resetWord() {
 		resetPos();
 		text=dict.getNewWord();
+                setMatched(false);
 		dropped=false;
 		fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait); 
 		//System.out.println(getWord() + " falling speed = " + getSpeed());
@@ -104,12 +105,12 @@ public class WordRecord {
 		return dropped;
 	}
         
-        //public synchronized boolean getMatched(){
-        //    return matched;
-        //}
+        public synchronized boolean getMatched(){
+            return matched;
+        }
         
-        //public synchronized void setMatched(Boolean matched){
-        //    this.matched = matched;
-        //}
+        public synchronized void setMatched(Boolean matched){
+            this.matched = matched;
+        }
 
 }

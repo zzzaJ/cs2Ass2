@@ -1,19 +1,14 @@
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 
 public class WordRecordThread implements Runnable {
     /*
     TO DO
     
-    sleep thread after moving down
-    check for matched words and update array
-    ensure arrays are the same when checking if word is correct
-    implement pause button
-    fix run method
-    maybe make array of threads for words
-    they litterally give us the value to sleep the thread...
+    update score when relevent event occurs, rather than when enter is hit
+    number of words to fall is not working. currently count is incorrect implementation
     
     you only need as many threads as there are words on the screen at a time..
     
@@ -25,7 +20,6 @@ public class WordRecordThread implements Runnable {
     private int index;
     private Score score;
     private int noWords;
-    private int onScreen;
     private WordPanel w;
     
     public WordRecordThread(WordRecord[] wrds, int indx, Score scr, int noWords, WordPanel ww){
@@ -50,27 +44,56 @@ public class WordRecordThread implements Runnable {
     @Override
     public void run() {
         
-        while(!WordPanel.done){ //checking if the game is done
+        while(!WordApp.done){ //checking if the game is done
             
-            //need to check if word y val == 480 to check if on red block.
+            
+            
+            if(WordApp.totalWords == WordApp.count){ // not working at the moment
+                WordApp.done = true;
+                break;
+            }
+            
+            if(words[index].getY()==480){ //need to check if word y val == 480 to check if on red block.
+                
+                if(!WordApp.stopDrop){
+                    words[index].resetWord();
+                }
+                getScore().missedWord();
+                WordApp.count++;
+                
+            }
+            
+            if(words[index].getMatched()){ //checking if the word was matched
+                
+                if(!WordApp.stopDrop){
+                    words[index].resetWord();
+                }
+                getScore().caughtWord(words[index].getWord().length());
+                WordApp.count++;
+                
+            }
+
             
             try {
-            words[index].drop(6); //arbitrary value of 5
+                
+            words[index].drop(5); //arbitrary value of 5
             
             Thread.sleep(words[index].getSpeed());
             w.paintComponent(w.getGraphics());
+            
             } catch (InterruptedException ex) {
                 
                 Logger.getLogger(WordRecordThread.class.getName()).log(Level.SEVERE, null, ex);
                 
             }
             
+
             
-            
-            
-            
-            
-            
+        }
+        
+        if(!WordApp.stopped){
+                WordApp.stopped = true;
+                JOptionPane.showMessageDialog(w, "Game over! Final score was caught: " + score.getCaught() + "  missed: " + score.getMissed() + " total: " + score.getTotal());
         }
         
         
@@ -91,19 +114,7 @@ public class WordRecordThread implements Runnable {
 //           
 //        }
     }
-    
-    public synchronized void incOnScreen(){
-        onScreen++;
-    }
-    
-    public synchronized void decOnScreen(){
-        onScreen--;
-    }
-    
-    public synchronized int getOnScreen(){
-        return onScreen;
-    }
-    
+        
     public synchronized void incNoWords(){
         noWords++;
     }

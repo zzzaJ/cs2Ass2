@@ -15,7 +15,9 @@ public class WordApp {
 //shared variables
 	static int noWords=4;
 	static int totalWords;
-        int count = 0;
+        static volatile int count = 0;
+        static Boolean startClicked = false;
+        
 
    	static int frameX=1000;
 	static int frameY=600;
@@ -26,11 +28,14 @@ public class WordApp {
 	static WordRecord[] words;
 	static volatile boolean done;  //must be volatile
 	static 	Score score = new Score();
+        static volatile boolean stopped = false;
+        static volatile boolean stopDrop = false;
 
 	static WordPanel w;
 	
 	
 	
+       
 	public static void setupGUI(int frameX,int frameY,int yLimit) {
 		// Frame init and dimensions
     	JFrame frame = new JFrame("WordGame"); 
@@ -42,7 +47,7 @@ public class WordApp {
       	g.setSize(frameX,frameY);
  
     	
-		w = new WordPanel(words,yLimit);
+		w = new WordPanel(words,yLimit,score);
 		w.setSize(frameX,yLimit+100);
                 
 	    g.add(w);
@@ -50,9 +55,9 @@ public class WordApp {
 	    
 	    JPanel txt = new JPanel();
 	    txt.setLayout(new BoxLayout(txt, BoxLayout.LINE_AXIS)); 
-	    JLabel caught =new JLabel("Caught: " + score.getCaught() + "    ");
-	    JLabel missed =new JLabel("Missed:" + score.getMissed()+ "    ");
-	    JLabel scr =new JLabel("Score:" + score.getScore()+ "    ");    
+	    JLabel caught = new JLabel("Caught: " + score.getCaught() + "    ");
+	    JLabel missed = new JLabel("Missed:" + score.getMissed()+ "    ");
+	    JLabel scr = new JLabel("Score:" + score.getScore()+ "    ");    
 	    txt.add(caught);
 	    txt.add(missed);
 	    txt.add(scr);
@@ -64,24 +69,35 @@ public class WordApp {
 	    {
 	      public void actionPerformed(ActionEvent evt) {
 	          String text = textEntry.getText();
+                 
 	          //[snip]
                   
-//                  if( < totalWords){
-//                      
-//                  }
+                  if(!done){ //check to see if game is actually done, should be triggered from threads though
+                      for(int i = 0; i < words.length; i++){
+                          if(words[i].matchWord(text)){
+                              words[i].setMatched(true);
+                          }
+                      }
+                      
+                      
+                  caught.setText("Caught: " + score.getCaught() + "    ");
+                  missed.setText("Missed:" + score.getMissed()+ "    ");
+                  scr.setText("Score:" + score.getScore()+ "    ");
+                  }
                   
 	          textEntry.setText("");
 	          textEntry.requestFocus();
 	      }
 	    });
 	   
+           
 	   txt.add(textEntry);
 	   txt.setMaximumSize( txt.getPreferredSize() );
 	   g.add(txt);
 	    
 	    JPanel b = new JPanel();
         b.setLayout(new BoxLayout(b, BoxLayout.LINE_AXIS)); 
-	   	JButton startB = new JButton("Start");;
+	   	JButton startB = new JButton("Start");
 		
 			// add the listener to the jbutton to handle the "pressed" event
 			startB.addActionListener(new ActionListener()
@@ -90,13 +106,18 @@ public class WordApp {
 		      {
 		    	  //[snip]
 		    	  textEntry.requestFocus();  //return focus to the text entry field
-                          
+                          if(startClicked == false){
+                          WordApp.done = false;
+                          WordApp.stopped = false;
                           Thread ww = new Thread(w);
                           ww.start();
+                          startClicked = true;
+                          }
+                          
                           
 		      }
 		    });
-		JButton endB = new JButton("End");;
+		JButton endB = new JButton("End");
 			
 				// add the listener to the jbutton to handle the "pressed" event
 				endB.addActionListener(new ActionListener()
@@ -104,11 +125,51 @@ public class WordApp {
 			      public void actionPerformed(ActionEvent e)
 			      {
 			    	  //[snip]
+                                  
+                                  WordApp.done = true; // stops thread while loop checking
+                                  WordApp.stopped = true; // stops game over message from showing
+                                  startClicked = false; // allows start button to be clicked again
+                                  score = new Score(); //resets score object
+                                  
+                                  for(int i = 0; i < words.length; i++){
+                                      
+                                      words[i].resetWord(); //resets the words, ready for the next game
+                                      
+                                  }
+                                  
 			      }
 			    });
+                                
+                JButton quitB = new JButton("Quit");
+			
+				// add the listener to the jbutton to handle the "pressed" event
+				quitB.addActionListener(new ActionListener()
+			    {
+			      public void actionPerformed(ActionEvent e)
+			      {
+			    	  
+                                  System.exit(0);
+                                  
+			      }
+			    });
+                                
+                JButton pauseB = new JButton("Quit");
+			
+                // add the listener to the jbutton to handle the "pressed" event
+                    quitB.addActionListener(new ActionListener()
+			{
+			    public void actionPerformed(ActionEvent e)
+                            {
+			    	  
+                              System.exit(0);
+                                  
+			    }
+			});
+                                
 		
 		b.add(startB);
 		b.add(endB);
+                b.add(quitB);
 		
 		g.add(b);
     	
@@ -120,7 +181,7 @@ public class WordApp {
 
 		
 	}
-
+       
 	
 public static String[] getDictFromFile(String filename) {
 		String [] dictStr = null;
