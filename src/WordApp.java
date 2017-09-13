@@ -1,5 +1,3 @@
-package skeletonCodeAssgnmt2;
-
 import javax.swing.*;
 
 import java.awt.*;
@@ -17,6 +15,7 @@ public class WordApp {
 //shared variables
 	static int noWords=4;
 	static int totalWords;
+        int count = 0;
 
    	static int frameX=1000;
 	static int frameY=600;
@@ -45,6 +44,7 @@ public class WordApp {
     	
 		w = new WordPanel(words,yLimit);
 		w.setSize(frameX,yLimit+100);
+                
 	    g.add(w);
 	    
 	    
@@ -65,6 +65,11 @@ public class WordApp {
 	      public void actionPerformed(ActionEvent evt) {
 	          String text = textEntry.getText();
 	          //[snip]
+                  
+//                  if( < totalWords){
+//                      
+//                  }
+                  
 	          textEntry.setText("");
 	          textEntry.requestFocus();
 	      }
@@ -85,6 +90,10 @@ public class WordApp {
 		      {
 		    	  //[snip]
 		    	  textEntry.requestFocus();  //return focus to the text entry field
+                          
+                          Thread ww = new Thread(w);
+                          ww.start();
+                          
 		      }
 		    });
 		JButton endB = new JButton("End");;
@@ -150,7 +159,7 @@ public static String[] getDictFromFile(String filename) {
 		//[snip]
 		
 		setupGUI(frameX, frameY, yLimit);  
-    	//Start WordPanel thread - for redrawing animation
+    	        //Start WordPanel thread - for redrawing animation
 
 		int x_inc=(int)frameX/noWords;
 	  	//initialize shared array of current words
@@ -158,6 +167,9 @@ public static String[] getDictFromFile(String filename) {
 		for (int i=0;i<noWords;i++) {
 			words[i]=new WordRecord(dict.getNewWord(),i*x_inc,yLimit);
 		}
+                
+                //Thread WP = new Thread(new WordPanel(words, yLimit));
+                //WP.start(); //need to do this for all the threads, based off the number that are on the screen
 
 
 	}

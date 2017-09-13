@@ -1,11 +1,10 @@
-package skeletonCodeAssgnmt2;
-
 public class WordRecord {
 	private String text;
 	private  int x;
 	private int y;
 	private int maxY;
 	private boolean dropped;
+        //private boolean matched; // ADDED VARIABLE
 	
 	private int fallingSpeed;
 	private static int maxWait=1500;
@@ -22,6 +21,7 @@ public class WordRecord {
 		maxY=300;
 		dropped=false;
 		fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait); 
+                //matched = false;
 	}
 	
 	WordRecord(String text) {
@@ -103,5 +103,13 @@ public class WordRecord {
 	public synchronized  boolean dropped() {
 		return dropped;
 	}
+        
+        //public synchronized boolean getMatched(){
+        //    return matched;
+        //}
+        
+        //public synchronized void setMatched(Boolean matched){
+        //    this.matched = matched;
+        //}
 
 }
