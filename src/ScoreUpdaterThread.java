@@ -1,5 +1,6 @@
 
-import static WordApp.score;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 
 
@@ -23,9 +24,20 @@ public class ScoreUpdaterThread implements Runnable{
     @Override
     public void run() {
         
+        while(!WordApp.done){
+            
+            if(WordApp.tbu){
+                synchronized(this){
+                    caught.setText("Caught: " + score.getCaught() + "    ");
+                    missed.setText("Missed:" + score.getMissed()+ "    ");
+                    scr.setText("Score:" + score.getScore()+ "    ");
+                }
         
+            }
+        }
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                      
+        
     }
     
     

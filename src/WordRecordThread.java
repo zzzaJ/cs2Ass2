@@ -21,6 +21,7 @@ public class WordRecordThread implements Runnable {
     private Score score;
     private int noWords;
     private WordPanel w;
+    private Boolean counted;
     
     public WordRecordThread(WordRecord[] wrds, int indx, Score scr, int noWords, WordPanel ww){
         
@@ -29,6 +30,7 @@ public class WordRecordThread implements Runnable {
         score = scr;
         this.noWords = noWords;
         w = ww;
+        counted = false;
         
     }
 
@@ -46,7 +48,11 @@ public class WordRecordThread implements Runnable {
         
         while(!WordApp.done){ //checking if the game is done
             
-            
+            if(!counted){
+                counted = true;
+                WordApp.stopDropInt--;
+                System.out.println(WordApp.stopDropInt);
+            }
             
             if(WordApp.totalWords == WordApp.count){ // not working at the moment
                 WordApp.done = true;
@@ -55,35 +61,42 @@ public class WordRecordThread implements Runnable {
             
             if(words[index].getY()==480){ //need to check if word y val == 480 to check if on red block.
                 
-                if(!WordApp.stopDrop){
-                    words[index].resetWord();
-                }
+                                
+                words[index].resetWord();
+                WordApp.stopDropInt--;
+                System.out.println(WordApp.stopDropInt);
                 getScore().missedWord();
+                WordApp.tbu = true;
                 WordApp.count++;
                 
             }
             
             if(words[index].getMatched()){ //checking if the word was matched
                 
-                if(!WordApp.stopDrop){
-                    words[index].resetWord();
-                }
+                WordApp.stopDropInt--;
+                System.out.println(WordApp.stopDropInt);
                 getScore().caughtWord(words[index].getWord().length());
+                WordApp.tbu = true;
                 WordApp.count++;
+                words[index].resetWord();
                 
             }
 
-            
-            try {
+            if(0 < WordApp.stopDropInt || words[index].dropped()){
                 
-            words[index].drop(5); //arbitrary value of 5
-            
-            Thread.sleep(words[index].getSpeed());
-            w.paintComponent(w.getGraphics());
-            
-            } catch (InterruptedException ex) {
+                try {
                 
-                Logger.getLogger(WordRecordThread.class.getName()).log(Level.SEVERE, null, ex);
+                words[index].drop(5); //arbitrary value of 5
+
+                
+                Thread.sleep(words[index].getSpeed());
+                //w.paintComponent(w.getGraphics());
+
+                } catch (InterruptedException ex) {
+
+                    Logger.getLogger(WordRecordThread.class.getName()).log(Level.SEVERE, null, ex);
+
+                }
                 
             }
             
@@ -93,6 +106,7 @@ public class WordRecordThread implements Runnable {
         
         if(!WordApp.stopped){
                 WordApp.stopped = true;
+                WordApp.startClicked = false;
                 JOptionPane.showMessageDialog(w, "Game over! Final score was caught: " + score.getCaught() + "  missed: " + score.getMissed() + " total: " + score.getTotal());
         }
         

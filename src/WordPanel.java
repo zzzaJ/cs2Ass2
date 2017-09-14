@@ -59,16 +59,16 @@ public class WordPanel extends JPanel implements Runnable {
                     }
                     
                     
-//                    while(!done){
-//                        try {
-//                            synchronized(this){
-//                            this.wait(100);
-//                            this.paintComponent(this.getGraphics());
-//                            }} catch (InterruptedException ex) {
-//                            Logger.getLogger(WordPanel.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                        
-//                    }
+                    while(!done){
+                        try {
+                            synchronized(this){
+                            this.wait(100);
+                            this.paintComponent(this.getGraphics());
+                            }} catch (InterruptedException ex) {
+                            Logger.getLogger(WordPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                    }
                     
                     //call method of another thread class, which will work with each word (drop it, score it, etc)
                     

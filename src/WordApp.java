@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import java.util.Scanner;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //model is separate from the view.
 
 public class WordApp {
@@ -16,7 +18,7 @@ public class WordApp {
 	static int noWords=4;
 	static int totalWords;
         static volatile int count = 0;
-        static Boolean startClicked = false;
+        static volatile Boolean startClicked = false;
         
 
    	static int frameX=1000;
@@ -30,6 +32,8 @@ public class WordApp {
 	static 	Score score = new Score();
         static volatile boolean stopped = false;
         static volatile boolean stopDrop = false;
+        static volatile int stopDropInt = 0;
+        static volatile boolean tbu = false;
 
 	static WordPanel w;
 	
@@ -78,11 +82,6 @@ public class WordApp {
                               words[i].setMatched(true);
                           }
                       }
-                      
-                      
-                  caught.setText("Caught: " + score.getCaught() + "    ");
-                  missed.setText("Missed:" + score.getMissed()+ "    ");
-                  scr.setText("Score:" + score.getScore()+ "    ");
                   }
                   
 	          textEntry.setText("");
@@ -109,8 +108,13 @@ public class WordApp {
                           if(startClicked == false){
                           WordApp.done = false;
                           WordApp.stopped = false;
+                          score.resetScore();
+                          count = 0;
                           Thread ww = new Thread(w);
+                          stopDropInt = totalWords+1;
                           ww.start();
+                          Thread scoreUpdater = new Thread(new ScoreUpdaterThread(caught, missed, scr, score));
+                          scoreUpdater.start();
                           startClicked = true;
                           }
                           
@@ -126,16 +130,22 @@ public class WordApp {
 			      {
 			    	  //[snip]
                                   
+                                  WordApp.stopped = true;// stops game over message from showing
                                   WordApp.done = true; // stops thread while loop checking
-                                  WordApp.stopped = true; // stops game over message from showing
                                   startClicked = false; // allows start button to be clicked again
-                                  score = new Score(); //resets score object
+                                  score.resetScore(); //resets score object
                                   
                                   for(int i = 0; i < words.length; i++){
                                       
                                       words[i].resetWord(); //resets the words, ready for the next game
                                       
                                   }
+                                  
+                                  
+                                  Thread scoreUpdater = new Thread(new ScoreUpdaterThread(caught, missed, scr, score));
+                                  scoreUpdater.start();
+                                  
+                                  
                                   
 			      }
 			    });
@@ -153,21 +163,24 @@ public class WordApp {
 			      }
 			    });
                                 
-                JButton pauseB = new JButton("Quit");
+                JButton pauseB = new JButton("Pause"); //Pause Button feature
 			
                 // add the listener to the jbutton to handle the "pressed" event
-                    quitB.addActionListener(new ActionListener()
+                    pauseB.addActionListener(new ActionListener()
 			{
 			    public void actionPerformed(ActionEvent e)
                             {
 			    	  
-                              System.exit(0);
+                              WordApp.done = true; // stops thread while loop checking
+                              WordApp.stopped = true; // stops game over message from showing
+                              startClicked = false; // allows start button to be clicked again
                                   
 			    }
 			});
                                 
 		
 		b.add(startB);
+                b.add(pauseB);
 		b.add(endB);
                 b.add(quitB);
 		
@@ -208,6 +221,7 @@ public static String[] getDictFromFile(String filename) {
 		//deal with command line arguments
 		totalWords=Integer.parseInt(args[0]);  //total words to fall
 		noWords=Integer.parseInt(args[1]); // total words falling at any point
+                stopDropInt = Integer.parseInt(args[0])+1; // setting the stopdrop integer value to noWords
 		assert(totalWords>=noWords); // this could be done more neatly
 		String[] tmpDict=getDictFromFile(args[2]); //file of words
 		if (tmpDict!=null)

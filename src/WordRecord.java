@@ -88,7 +88,7 @@ public class WordRecord {
 	
 	public synchronized boolean matchWord(String typedText) {
 		//System.out.println("Matching against: "+text);
-		if (typedText.equals(this.text)) {
+		if (typedText.equals(this.text)&&this.dropped()) {
 			resetWord();
 			return true;
 		}
@@ -99,6 +99,7 @@ public class WordRecord {
 
 	public synchronized  void drop(int inc) {
 		setY(y+inc);
+                dropped = true;
 	}
 	
 	public synchronized  boolean dropped() {
