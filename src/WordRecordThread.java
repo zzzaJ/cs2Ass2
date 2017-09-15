@@ -4,17 +4,6 @@ import javax.swing.JOptionPane;
 
 
 public class WordRecordThread implements Runnable {
-    /*
-    TO DO
-    
-    update score when relevent event occurs, rather than when enter is hit
-    number of words to fall is not working. currently count is incorrect implementation
-    
-    you only need as many threads as there are words on the screen at a time..
-    
-    
-    */
-    
     
     private WordRecord[] words;
     private int index;
@@ -29,15 +18,10 @@ public class WordRecordThread implements Runnable {
         index = indx;
         score = scr;
         this.noWords = noWords;
-        w = ww;
         counted = false;
         
     }
 
-    public synchronized int getIndex(){
-        return index;
-    } 
-    
     public synchronized Score getScore(){
         return score;
     }
@@ -90,7 +74,6 @@ public class WordRecordThread implements Runnable {
 
                 
                 Thread.sleep(words[index].getSpeed());
-                //w.paintComponent(w.getGraphics());
 
                 } catch (InterruptedException ex) {
 
@@ -109,32 +92,6 @@ public class WordRecordThread implements Runnable {
                 WordApp.startClicked = false;
                 JOptionPane.showMessageDialog(w, "Game over! Final score was caught: " + score.getCaught() + "  missed: " + score.getMissed() + " total: " + score.getTotal());
         }
-        
-        
-//        while(!WordPanel.done && words[index].getY()!=777){ // if the game isnt done
-//            if (getOnScreen() < getNoWords()){ // if the words on screen is less than required words on screen
-//                
-//                if(!words[index].dropped()){ //if the word isnt dropped 
-//                    
-//                    words[index].drop(words[index].getSpeed());
-//                    
-//                }
-//                if(words[index].getY()==480){
-//                    decOnScreen();
-//                }
-//          
-//            
-//            }
-//           
-//        }
     }
         
-    public synchronized void incNoWords(){
-        noWords++;
-    }
-    
-    public synchronized int getNoWords(){
-        return noWords;
-    }
-    
 }

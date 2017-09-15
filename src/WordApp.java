@@ -105,17 +105,17 @@ public class WordApp {
 		      {
 		    	  //[snip]
 		    	  textEntry.requestFocus();  //return focus to the text entry field
-                          if(startClicked == false){
-                          WordApp.done = false;
-                          WordApp.stopped = false;
-                          score.resetScore();
-                          count = 0;
-                          Thread ww = new Thread(w);
-                          stopDropInt = totalWords+1;
-                          ww.start();
-                          Thread scoreUpdater = new Thread(new ScoreUpdaterThread(caught, missed, scr, score));
-                          scoreUpdater.start();
-                          startClicked = true;
+                          if(startClicked == false){ // if the start button has not been clicked yet, or if a game is completed or ended: reset intial variables
+                            WordApp.done = false;
+                            WordApp.stopped = false;
+                            score.resetScore();
+                            count = 0;
+                            Thread ww = new Thread(w);
+                            stopDropInt = totalWords+1;
+                            ww.start();
+                            Thread scoreUpdater = new Thread(new ScoreUpdaterThread(caught, missed, scr, score));
+                            scoreUpdater.start();
+                            startClicked = true;
                           }
                           
                           
@@ -140,13 +140,6 @@ public class WordApp {
                                       words[i].resetWord(); //resets the words, ready for the next game
                                       
                                   }
-                                  
-                                  
-                                  Thread scoreUpdater = new Thread(new ScoreUpdaterThread(caught, missed, scr, score));
-                                  scoreUpdater.start();
-                                  
-                                  
-                                  
 			      }
 			    });
                                 
@@ -242,11 +235,6 @@ public static String[] getDictFromFile(String filename) {
 		for (int i=0;i<noWords;i++) {
 			words[i]=new WordRecord(dict.getNewWord(),i*x_inc,yLimit);
 		}
-                
-                //Thread WP = new Thread(new WordPanel(words, yLimit));
-                //WP.start(); //need to do this for all the threads, based off the number that are on the screen
-
-
 	}
 
 }

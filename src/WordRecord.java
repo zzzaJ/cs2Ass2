@@ -21,7 +21,6 @@ public class WordRecord {
 		maxY=300;
 		dropped=false;
 		fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait); 
-                //matched = false;
 	}
 	
 	WordRecord(String text) {
@@ -82,12 +81,10 @@ public class WordRecord {
                 setMatched(false);
 		dropped=false;
 		fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait); 
-		//System.out.println(getWord() + " falling speed = " + getSpeed());
 
 	}
 	
 	public synchronized boolean matchWord(String typedText) {
-		//System.out.println("Matching against: "+text);
 		if (typedText.equals(this.text)&&this.dropped()) {
 			resetWord();
 			return true;

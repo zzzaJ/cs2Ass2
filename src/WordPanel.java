@@ -27,12 +27,9 @@ public class WordPanel extends JPanel implements Runnable {
 
 		    g.setColor(Color.black);
 		    g.setFont(new Font("Helvetica", Font.PLAIN, 26));
-		   //draw the words
-		   //animation must be added 
                    synchronized(this){
-		    for (int i=0;i<noWords;i++){	    	
-		    	//g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());	
-		    	g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());  //y-offset for skeleton so that you can see the words	
+		    for (int i=0;i<noWords;i++){	    		
+		    	g.drawString(words[i].getWord(),words[i].getX(),words[i].getY());	
 		    }
                 }
 		   
@@ -41,7 +38,7 @@ public class WordPanel extends JPanel implements Runnable {
 
 		
 		WordPanel(WordRecord[] words, int maxY, Score score) {
-			this.words=words; //will this work?
+			this.words=words;
 			noWords = words.length;
 			done=false;
 			this.maxY=maxY;	
@@ -69,20 +66,6 @@ public class WordPanel extends JPanel implements Runnable {
                         }
                         
                     }
-                    
-                    //call method of another thread class, which will work with each word (drop it, score it, etc)
-                    
-                    // main -> WordPanel thread -> multiple word managing threads?
-                    // or main starts wordpanel threads that are for each word
-                    
-                    // potential solution : One word panel thread -> multiple wordPanelManager threads each started with a specfic wordRecord object,
-                    // which then manages a specific word, closing when word is scored, reaches bottom : starts when wordsOnScreen < actual words on screen (words with y < minY)
-                    // model view satisfied... word record object gets passed along with an integer, determining which word will be accessable by the thread, 
-                    // then only WordRecord object need be safe.
-                    
-                    // could possibly create array of wordrecord controlling threads, starting them as the words are completed... 
-
-                    //add in code to animate this
 		}
 
 	}
