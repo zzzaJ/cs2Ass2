@@ -59,10 +59,10 @@ public class WordRecordThread implements Runnable {
             
             if(!counted){ //counting the intial drop of the word (to keep track of total words dropped)
                 counted = true;
-                WordApp.stopDropInt--;
+                WordApp.stopDropInt.getAndDecrement();
             }
             
-            if(WordApp.totalWords == WordApp.count){ // counting the number of words dropped and determining if the game is over
+            if(WordApp.totalWords == WordApp.count.get()){ // counting the number of words dropped and determining if the game is over
                 WordApp.done = true;
                 break;
             }
@@ -71,24 +71,24 @@ public class WordRecordThread implements Runnable {
                 
                                 
                 words[index].resetWord();//resets word
-                WordApp.stopDropInt--;//decrements total words dropped counter
+                WordApp.stopDropInt.getAndDecrement();//decrements total words dropped counter
                 getScore().missedWord();//increases the missed score
-                WordApp.tbu = true;// notify score thread to update score
-                WordApp.count++;// increase count, since word is no longer in play
+                WordApp.tbu.set(true);// notify score thread to update score
+                WordApp.count.getAndIncrement();// increase count, since word is no longer in play
                 
             }
             
             if(words[index].getMatched()){ //checking if the word was matched
                 
-                WordApp.stopDropInt--;//decrements total words dropped counter
+                WordApp.stopDropInt.getAndDecrement();//decrements total words dropped counter
                 getScore().caughtWord(words[index].getWord().length());//increases the caught score
-                WordApp.tbu = true;// notify score thread to update score
-                WordApp.count++;// increase count, since word is no longer in play
+                WordApp.tbu.set(true);// notify score thread to update score
+                WordApp.count.getAndIncrement();// increase count, since word is no longer in play
                 words[index].resetWord();//reset the word 
                 
             }
 
-            if(0 < WordApp.stopDropInt || words[index].dropped()){ //if there are still words to be dropped or if the word has already been dropped 
+            if(0 < WordApp.stopDropInt.get() || words[index].dropped()){ //if there are still words to be dropped or if the word has already been dropped 
                 
                 try {
                 
@@ -104,9 +104,9 @@ public class WordRecordThread implements Runnable {
             }
         }
         
-        if(!WordApp.stopped){ // if game has finished
-                WordApp.stopped = true; //cahnge value to only allow one thread to display the score
-                WordApp.startClicked = false; //allow start to be clicked again
+        if(!WordApp.stopped.get()){ // if game has finished
+                WordApp.stopped.set(true); //cahnge value to only allow one thread to display the score
+                WordApp.startClicked.set(false); //allow start to be clicked again
                 JOptionPane.showMessageDialog(w, "Game over! Final score was caught: " + score.getCaught() + "  missed: " + score.getMissed() + " total: " + score.getTotal());
                 //display end of game message with score
         }

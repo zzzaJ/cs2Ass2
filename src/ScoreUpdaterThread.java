@@ -46,7 +46,7 @@ public class ScoreUpdaterThread implements Runnable{
         
         while(!WordApp.done){ // loop until the game is done
             
-            if(WordApp.tbu){ //if the score is to be updated
+            if(WordApp.tbu.get()){ //if the score is to be updated
                 synchronized(this){ //synchronize 
                     caught.setText("Caught: " + score.getCaught() + "    "); //update caught score
                     missed.setText("Missed:" + score.getMissed()+ "    "); //update missed score

@@ -27,8 +27,8 @@ CLASSES = WordDictionary.class \
 classes: $(CLASSES:.java=.class)
 
 doc: $(BINDIR)
-	javadoc -d $(DOCDIR) ./src/WordRecordThread.java -cp $(BINDIR) -cp $(SRCDIR) 
-	javadoc -d $(DOCDIR) ./src/ScoreUpdaterThread.java  -cp $(BINDIR) -cp $(SRCDIR) 
+	javadoc -d $(DOCDIR) ./src/WordRecordThread.java -cp $(BINDIR)
+	javadoc -d $(DOCDIR) ./src/ScoreUpdaterThread.java  -cp $(BINDIR)
 	
 clean:
 	$(RM) $(BINDIR)/*.class

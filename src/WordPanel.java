@@ -59,7 +59,7 @@ public class WordPanel extends JPanel implements Runnable {
                     while(!done){
                         try {
                             synchronized(this){
-                            this.wait(100);
+                            this.wait(20);
                             this.paintComponent(this.getGraphics());
                             }} catch (InterruptedException ex) {
                             Logger.getLogger(WordPanel.class.getName()).log(Level.SEVERE, null, ex);
