@@ -81,6 +81,7 @@ public class WordApp {
                       for(int i = 0; i < words.length; i++){
                           if(words[i].matchWord(text)){
                               words[i].setMatched(true);
+                              break;
                             }
                       }
                   }
